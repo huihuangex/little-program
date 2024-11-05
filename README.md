@@ -1,1 +1,3 @@
-# -
+
+
+查资料和利用ai写的各种windows可以直接跑的cmd或者powershell程序
