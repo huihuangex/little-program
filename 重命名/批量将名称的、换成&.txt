@@ -1,0 +1,21 @@
+这段代码是让cluade2写的，提示词是：
+我需要你用powershell写一段代码，把当前文件夹内所有文件的文件名中的“、”都换成“&”
+
+在地址栏里面输入powershell，然后把代码复制进去
+
+# 获取当前文件夹下所有文件
+$files = Get-ChildItem
+
+# 遍历每个文件  
+foreach ($file in $files) {
+
+  # 从文件名中替换双引号为&号
+  $newName = $file.Name -replace '、','&'
+
+  # 拼接新旧完整路径
+  $oldPath = $file.FullName
+  $newPath = Join-Path $file.Directory.FullName $newName
+
+  # 重命名文件
+  Rename-Item $oldPath $newPath
+}

@@ -1,0 +1,24 @@
+提示词：
+帮我写一个cmd程序，可以让我把当前文件夹内所有名称中含有[720p]的文件，重命名去掉这些特定字符
+
+保存为cmd之后，需要在对应的电脑上运行，否则没反应
+
+@echo off
+setlocal enabledelayedexpansion
+
+set "targetFolder=%cd%"
+set "searchString=[720p]"
+
+for %%F in ("%targetFolder%\*%searchString%*") do (
+    set "filename=%%~nxF"
+    set "newFilename=!filename:%searchString%=!"
+
+    if not "!filename!"=="!newFilename!" (
+        ren "%%F" "!newFilename!"
+        echo "文件 %%F 已重命名为 !newFilename!"
+    )
+)
+
+echo "所有符合条件的文件已重命名完成。"
+
+endlocal

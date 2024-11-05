@@ -1,0 +1,18 @@
+在地址栏里面输入powershell，然后把代码复制进去
+
+# 获取当前文件夹下所有文件
+$files = Get-ChildItem
+
+# 遍历每个文件
+foreach ($file in $files) {
+
+  # 从文件名中提取不包含空格的名称
+  $newName = $file.Name -replace '\s',''
+
+  # 拼接新旧完整路径
+  $oldPath = $file.FullName
+  $newPath = Join-Path $file.Directory.FullName $newName
+
+  # 重命名文件
+  Rename-Item $oldPath $newPath
+}

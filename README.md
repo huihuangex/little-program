@@ -1,3 +1,12 @@
+查资料和利用ai写的各种windows可以直接跑的程序
 
+txt一般是还需要我手动执行
 
-查资料和利用ai写的各种windows可以直接跑的cmd或者powershell程序
+下面是可以直接执行的程序
+cmd
+bat
+powershell
+js
+jse
+ps1
+vbs
