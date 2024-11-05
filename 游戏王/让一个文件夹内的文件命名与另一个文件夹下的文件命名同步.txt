@@ -1,0 +1,56 @@
+这段代码是让cluade2写的，提示词是：
+写一段powershell代码，设定目标文件夹路径（1个），设定源文件夹路径（有7个），如果目标文件夹（包括子文件夹）中的图片文件名称中的数字，与源文件夹中的图片文件名称中的数字完全匹配，那么就把目标文件夹中（包括子文件夹）的图片文件名称重命名为源文件夹中的图片文件名称
+
+
+在地址栏里面输入powershell，然后把代码复制进去
+或者可以把代码复制到一个txt文档中，后缀名改成ps1，右键powershell运行
+
+
+# 设定目标文件夹路径
+$targetFolderPath = "\\Pc00\g\g盘娱乐\游戏\单机\03游戏王\01卡片收藏\00卡组童年"
+
+# 设定源文件夹路径数组
+$sourceFolderPaths = @(
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\00神魔"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\01怪兽融合"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\01怪兽仪式"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\02怪兽好看"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\02怪兽普通"  
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\02怪兽效果"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\03魔法"
+    "\\PC00\g\g盘娱乐\游戏\单机\03游戏王\00卡片收藏\03陷阱"
+)
+
+# 递归获取目标文件夹中的所有图片文件
+$targetImageFiles = Get-ChildItem -Path $targetFolderPath -Recurse -Include "*.jpg", "*.png" -File
+
+# 循环遍历目标文件夹中的图片文件
+foreach ($targetImageFile in $targetImageFiles) {
+    $targetImageName = $targetImageFile.Name
+    $targetImageNumber = [regex]::Match($targetImageName, "\d+").Value
+
+    # 循环遍历源文件夹
+    foreach ($sourceFolderPath in $sourceFolderPaths) {
+        # 递归获取源文件夹中的所有图片文件
+        $sourceImageFiles = Get-ChildItem -Path $sourceFolderPath -Recurse -Include "*.jpg", "*.png" -File
+
+        # 在源文件夹中查找匹配的图片文件
+        $matchingSourceImageFile = $sourceImageFiles | Where-Object {
+            $sourceImageNumber = [regex]::Match($_.Name, "\d+").Value
+            $sourceImageNumber -eq $targetImageNumber
+        }
+
+        # 如果找到匹配的图片文件，则重命名目标文件夹中的图片文件
+        if ($matchingSourceImageFile) {
+            $newImageName = $matchingSourceImageFile.Name
+            $newImagePath = Join-Path -Path $targetImageFile.Directory.FullName -ChildPath $newImageName
+
+            # 检查目标文件名是否与源文件名相同，如果不同则进行重命名
+            if ($targetImageName -ne $newImageName) {
+                Rename-Item -Path $targetImageFile.FullName -NewName $newImageName
+                Write-Host "Renamed '$targetImageName' to '$newImageName'"
+            }
+            break  # 跳出当前循环，处理下一个目标文件
+        }
+    }
+}

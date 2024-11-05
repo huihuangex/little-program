@@ -1,0 +1,34 @@
+这段代码是让cluade2写的，提示词是：
+我需要你用powershell写一段代码，在运行powershell的文件夹中有一个ydk文件，你要对ydk格式的文件用记事本打开，然后读取里面的每一段数字，然后再对我指定路径的文件夹下面的图片标题进行匹配（不要匹配格式），然后在本文件夹新建一个子文件夹，名字与ydk文件的名字一样，匹配到的图片就复制粘贴进去
+
+
+新建一个文件夹，然后把ydk文件放进去，在地址栏里面输入powershell，然后把代码复制进去，只能这样使用，不能做成ps1
+
+
+
+# 获取当前文件夹中的ydk文件
+$ydkFile = Get-ChildItem *.ydk
+
+# 打开ydk文件
+notepad $ydkFile.FullName 
+
+# 读取文件内容
+$content = Get-Content $ydkFile.FullName
+
+# 提取数字
+$numbers = [regex]::Matches($content, '\d+') | ForEach-Object {$_.Value}
+
+# 指定图片文件夹路径
+$imgFolder = "G:\03游戏王\中文卡片收藏"
+
+# 在当前文件夹新建目录,名为ydk文件名
+$outputDir = $ydkFile.BaseName
+New-Item $outputDir -ItemType Directory
+
+# 遍历图片文件夹
+Get-ChildItem $imgFolder | ForEach-Object {
+  $name = $_.BaseName
+  if($numbers -contains $name) {
+    Copy-Item $_.FullName $outputDir
+  }
+}

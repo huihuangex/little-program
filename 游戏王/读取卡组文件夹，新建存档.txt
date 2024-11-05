@@ -1,0 +1,20 @@
+这段代码是让cluade2写的，提示词是：
+帮我写一个powershell程序，读当前目录文件夹下面的所有文件名，包括子文件夹，每个文件名只取用数字部分，本程序的ps1代码文件除外，然后输出到一个txt文档中
+
+在地址栏里面输入powershell，然后把代码复制进去
+或者可以把代码复制到一个txt文档中，后缀名改成ps1，运行时直接把ps1文件放进卡组文件夹里面，右键powershell运行
+
+# 获取当前目录路径
+$currentFolderPath = Get-Location
+
+# 获取当前目录中的所有文件名（包括子文件夹）
+$fileNames = Get-ChildItem -Path $currentFolderPath -Recurse | Where-Object { $_.PSIsContainer -eq $false -and $_.Name -notlike "*.ps1" } | ForEach-Object {
+    $fileNameWithDigits = $_.Name -replace "\D", ""
+    $fileNameWithDigits
+}
+
+# 输出文件名到文本文件
+$outputFilePath = Join-Path -Path $currentFolderPath -ChildPath "Output.txt"
+$fileNames | Out-File -FilePath $outputFilePath -Encoding UTF8
+
+Write-Host "文件名已输出到 $outputFilePath"
